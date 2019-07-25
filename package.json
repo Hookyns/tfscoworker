@@ -1,0 +1,29 @@
+{
+  "name": "tfscowork",
+  "version": "1.0.0",
+  "description": "Service coworking with TFS backlog",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "TFS",
+    "service",
+    "cowork",
+    "backlog",
+    "team",
+    "foundation",
+    "server"
+  ],
+  "author": "Roman Jámbor",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/msgpack": "0.0.30",
+    "@types/msgpack5": "^3.4.1",
+    "@types/node": "^12.6.8",
+    "typescript": "^3.5.3"
+  },
+  "dependencies": {
+    "msgpack5": "^4.2.1"
+  }
+}
