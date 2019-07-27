@@ -6,6 +6,9 @@
 **/*.js
 **/*.js.map
 
+# ENV setting
+.env
+
 # Logs
 logs
 *.log

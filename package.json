@@ -21,9 +21,14 @@
     "@types/msgpack": "0.0.30",
     "@types/msgpack5": "^3.4.1",
     "@types/node": "^12.6.8",
+    "@types/ws": "^6.0.1",
     "typescript": "^3.5.3"
   },
   "dependencies": {
-    "msgpack5": "^4.2.1"
+    "azure-devops-node-api": "^9.0.1",
+    "dotenv": "^8.0.0",
+    "msgpack5": "^4.2.1",
+    "q": "^1.5.1",
+    "ws": "^7.1.1"
   }
 }

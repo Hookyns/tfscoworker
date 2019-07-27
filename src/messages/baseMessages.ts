@@ -25,7 +25,7 @@ export interface IHandshakeMessage extends IBaseMessage
 	/**
 	 * Identifier
 	 */
-	Identifier: Array<number>;
+	Identifier: string; //Array<number>;
 
 	/**
 	 * User name
@@ -36,4 +36,8 @@ export interface IHandshakeMessage extends IBaseMessage
 	 * User password
 	 */
 	Password: string;
+}
+
+export interface IHandshakeStatusMessage extends IBaseMessage {
+	Status: boolean;
 }
