@@ -6,6 +6,8 @@ import {MessageType} from "./messages/messageType";
 import * as WebSocket from "ws";
 import Log from "./log";
 import DesktopClientServer from "./desktopClientServer";
+import WorkContext from "./dtos/workContext";
+import Application from "./application";
 
 export default class DesktopClient
 {
@@ -58,11 +60,24 @@ export default class DesktopClient
 	private desktopClientServer: DesktopClientServer;
 
 	/**
+	 * Client's work context
+	 */
+	private _workContext: WorkContext | undefined;
+
+	/**
 	 * On message event
 	 */
 	public get onMessage(): BaseEvent<IBaseMessage>
 	{
 		return this._onMessage;
+	}
+
+	/**
+	 * Client work context
+	 */
+	public get workContext(): WorkContext
+	{
+		return this._workContext;
 	}
 
 	/**
@@ -127,7 +142,7 @@ export default class DesktopClient
 	private init()
 	{
 		this.socket
-			.on("message", data => {
+			.on("message", async data => {
 				if (!data) {
 					return;
 				}
@@ -139,7 +154,7 @@ export default class DesktopClient
 				}
 
 				if (!this.handshaked) {
-					this.processHandshake(message as IHandshakeMessage);
+					await this.processHandshake(message as IHandshakeMessage);
 					return;
 				}
 
@@ -147,7 +162,7 @@ export default class DesktopClient
 			})
 			.on("error", (err) => {
 				Log.error(err);
-				
+
 				if (!this.handshaked) {
 					// Send negative handshake response
 					this.send<IHandshakeStatusMessage>({Type: MessageType.HandshakeStatus, Status: false});
@@ -156,7 +171,7 @@ export default class DesktopClient
 			})
 			.on("close", had_error => {
 				Log.info("Client closed connection");
-				
+
 				if (this.handshaked) {
 					this.desktopClientServer.removeClient(this);
 				}
@@ -167,7 +182,7 @@ export default class DesktopClient
 	 *
 	 * @param message
 	 */
-	private processHandshake(message: IHandshakeMessage)
+	private async processHandshake(message: IHandshakeMessage)
 	{
 		if (message.Type !== MessageType.Handshake) {
 			Log.info("Unexpected data received:", message);
@@ -176,22 +191,24 @@ export default class DesktopClient
 		// Clear timeout
 		clearTimeout(this.socketHandshakeTimeout);
 
-		if (message.Identifier == DesktopClient.HandshakeIdentifier)
+		if (message.Identifier == DesktopClient.HandshakeIdentifier && message.User && this.handshakeResolver)
 		{
-			if (message.User && message.Password) {
-				if (this.handshakeResolver) {
-					// TODO: Remove timeout, just cuz of tests
-					setTimeout(() => {
+			let workContext = await Application.instance.fetchClientWorkContext(message);
 
-						// Send positive handshake response
-						this.send<IHandshakeStatusMessage>({Type: MessageType.HandshakeStatus, Status: true});
-						this.handshakeResolver(message);
-						this.handshaked = true;
-						this.handshakeResolver = undefined;
-						this.handshakeRejecter = undefined;
-					}, 5000);
-					return;
-				}
+			if (workContext) {
+				this._workContext = workContext;
+				
+				// TODO: Remove timeout, just cuz of tests
+				// setTimeout(() => {
+
+					// Send positive handshake response
+					this.send<IHandshakeStatusMessage>({Type: MessageType.HandshakeStatus, Status: true});
+					this.handshakeResolver(message);
+					this.handshaked = true;
+					this.handshakeResolver = undefined;
+					this.handshakeRejecter = undefined;
+				// }, 5000);
+				return;
 			}
 		}
 

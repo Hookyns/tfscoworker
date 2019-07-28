@@ -12,4 +12,7 @@ Log.setLoggers({
 Log.setLogLevel(LogLevel.Debug);
 
 // Initialize application
-Application.initialize();
+Application.initialize()
+	.then(() => {
+		Log.info("Application initialized");
+	});
