@@ -7,7 +7,7 @@ import TaskInfo from "../dtos/taskInfo";
  */
 export interface IBaseMessage
 {
-	Type: MessageType;
+	type: MessageType;
 }
 
 /**
@@ -18,7 +18,7 @@ export interface IBaseResponseMessage extends IBaseMessage
 	/**
 	 * Error message in case of error
 	 */
-	Error?: string;
+	error?: string;
 }
 
 /**
@@ -27,7 +27,7 @@ export interface IBaseResponseMessage extends IBaseMessage
  */
 export interface IDisconnectMessage extends IBaseMessage
 {
-	Reason: string;
+	reason: string;
 }
 
 /**
@@ -38,24 +38,24 @@ export interface IHandshakeMessage extends IBaseMessage
 	/**
 	 * Identifier
 	 */
-	Identifier: string; //Array<number>;
+	identifier: string;
 
 	/**
 	 * User name
 	 */
-	User: string;
+	user: string;
 
 	/**
 	 * User password
 	 */
-	Password: string;
+	password: string;
 }
 
 /**
  * Response: Handshake response message
  */
 export interface IHandshakeStatusMessage extends IBaseResponseMessage {
-	Status: boolean;
+	status: boolean;
 }
 
 /**
@@ -65,14 +65,14 @@ export interface IListMyTasksMessage extends IBaseMessage {
 	/**
 	 * Project ID (can be unique project name)
 	 */
-	ProjectId: string;
+	projectId: string;
 }
 
 /**
  * Response: Tasks list
  */
 export interface ITaskListMessage extends IBaseResponseMessage {
-	Tasks: Array<TaskInfo>
+	tasks: Array<TaskInfo>
 }
 
 /**
@@ -86,7 +86,7 @@ export interface IListMyProjectsMessage extends IBaseMessage {
  * Response: Projects list
  */
 export interface IProjectListMessage extends IBaseResponseMessage {
-	Projects: Array<ProjectInfo>
+	projects: Array<ProjectInfo>
 }
 
 /**
@@ -96,12 +96,12 @@ export interface IApplyWorkSpanMessage extends IBaseMessage {
 	/**
 	 * Id of task to which changes should be applied
 	 */
-	TaskId: number;
+	taskId: number;
 
 	/**
 	 * Work span time
 	 */
-	WorkTime: number;
+	workTime: number;
 }
 
 /**
@@ -111,7 +111,7 @@ export interface IWorkSpanApplyResultMessage extends IBaseResponseMessage {
 	/**
 	 * Task after work span application
 	 */
-	Task: TaskInfo
+	task: TaskInfo
 }
 
 /**
@@ -121,7 +121,7 @@ export interface IListTaskPerDayWorkMessage extends IBaseMessage {
 	/**
 	 * Id of task whose details are required
 	 */
-	TaskId: number;
+	taskId: number;
 }
 
 /**
@@ -132,5 +132,5 @@ export interface ITaskPerDayWorkMessage extends IBaseResponseMessage {
 	 * Id of task whose details are required
 	 * @description Key-value collection (dictionary) with work time sums per day. Key is ISO date format. Value is float number.
 	 */
-	Work: { [date: string]: number };
+	work: { [date: string]: number };
 }

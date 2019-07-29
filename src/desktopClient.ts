@@ -121,10 +121,20 @@ export default class DesktopClient
 	 * Send message
 	 * @param message
 	 */
-	public send<TMessage extends IBaseMessage>(message: TMessage)
+	public async send<TMessage extends IBaseMessage>(message: TMessage): Promise<void>
 	{
-		const msg = Message.create<TMessage>(message);
-		this.socket.send(msg);
+		return new Promise((resolve, reject) => {
+			const msg = Message.create<TMessage>(message);
+			
+			this.socket.send(msg, (err?: Error) => {
+				if (err) {
+					reject(err);
+					return;
+				}
+				
+				resolve();
+			});
+		});
 	}
 
 	/**
@@ -160,12 +170,12 @@ export default class DesktopClient
 
 				this._onMessage.trigger(message);
 			})
-			.on("error", (err) => {
+			.on("error", async (err) => {
 				Log.error(err);
 
 				if (!this.handshaked) {
 					// Send negative handshake response
-					this.send<IHandshakeStatusMessage>({Type: MessageType.HandshakeStatus, Status: false});
+					await this.send<IHandshakeStatusMessage>({type: MessageType.HandshakeStatus, status: false});
 					this.handshakeRejecter(err);
 				}
 			})
@@ -184,14 +194,14 @@ export default class DesktopClient
 	 */
 	private async processHandshake(message: IHandshakeMessage)
 	{
-		if (message.Type !== MessageType.Handshake) {
+		if (message.type !== MessageType.Handshake) {
 			Log.info("Unexpected data received:", message);
 		}
 
 		// Clear timeout
 		clearTimeout(this.socketHandshakeTimeout);
 
-		if (message.Identifier == DesktopClient.HandshakeIdentifier && message.User && this.handshakeResolver)
+		if (message.identifier == DesktopClient.HandshakeIdentifier && message.user && this.handshakeResolver)
 		{
 			let workContext = await Application.instance.fetchClientWorkContext(message);
 
@@ -202,7 +212,7 @@ export default class DesktopClient
 				// setTimeout(() => {
 
 					// Send positive handshake response
-					this.send<IHandshakeStatusMessage>({Type: MessageType.HandshakeStatus, Status: true});
+					await this.send<IHandshakeStatusMessage>({type: MessageType.HandshakeStatus, status: true});
 					this.handshakeResolver(message);
 					this.handshaked = true;
 					this.handshakeResolver = undefined;
@@ -213,7 +223,7 @@ export default class DesktopClient
 		}
 
 		// Send negative handshake response
-		this.send<IHandshakeStatusMessage>({Type: MessageType.HandshakeStatus, Status: false});
+		await this.send<IHandshakeStatusMessage>({type: MessageType.HandshakeStatus, status: false});
 		this.handshakeResolver(null);
 		this.handshakeResolver = undefined;
 		this.handshakeRejecter = undefined;

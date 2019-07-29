@@ -11,6 +11,7 @@ import ProjectInfo from "./dtos/projectInfo";
 import TeamMemberInfo from "./dtos/teamMemberInfo";
 import TaskInfo from "./dtos/taskInfo";
 import {WorkItem} from "azure-devops-node-api-0.7.0/api/interfaces/WorkItemTrackingInterfaces";
+import {createTaskInfo, toFloat, toInt} from "./utility/dataHelper";
 
 export default class TfsService
 {
@@ -86,7 +87,7 @@ export default class TfsService
 				"Microsoft.VSTS.Scheduling.RemainingWork", "Microsoft.VSTS.Common.Activity"
 			]);
 
-		return this.createTaskInfo(task);
+		return createTaskInfo(task);
 	}
 
 	/**
@@ -109,8 +110,8 @@ export default class TfsService
 			let date = new Date(dateTime.getFullYear(), dateTime.getMonth(), dateTime.getDate());
 			let dateId = date.toISOString();
 			
-			let prevCompletedWork = index > 0 ? this.parseFloat(revisions[index - 1].fields["Microsoft.VSTS.Scheduling.CompletedWork"]) : 0;
-			let addedTime = this.parseFloat(revision.fields["Microsoft.VSTS.Scheduling.CompletedWork"]) - prevCompletedWork;
+			let prevCompletedWork = index > 0 ? toFloat(revisions[index - 1].fields["Microsoft.VSTS.Scheduling.completedWork"]) : 0;
+			let addedTime = toFloat(revision.fields["Microsoft.VSTS.Scheduling.completedWork"]) - prevCompletedWork;
 			
 			groups[dateId] = (groups[dateId] || 0) + addedTime;
 			
@@ -130,12 +131,12 @@ export default class TfsService
 	public async applyWorkSpan(taskId: number, workSpan: number, userDisplayName: string): Promise<TaskInfo>
 	{
 		// Fix type
-		workSpan = this.parseFloat(workSpan);
+		workSpan = toFloat(workSpan);
 
 		let task = await this.getTaskInfo(taskId);
 
 		// Fix remaining
-		let remaining = task.RemainingWork - workSpan;
+		let remaining = task.remainingWork - workSpan;
 		if (remaining < 0) {
 			remaining = 0;
 		}
@@ -144,7 +145,7 @@ export default class TfsService
 			{
 				op: Operation.Replace,
 				path: "/fields/Microsoft.VSTS.Scheduling.CompletedWork",
-				value: task.CompletedWork + workSpan,
+				value: task.completedWork + workSpan,
 				from: undefined
 			},
 			{
@@ -168,7 +169,7 @@ export default class TfsService
 			throw new Error("Work item update failed")
 		}
 		
-		return this.createTaskInfo(res);
+		return createTaskInfo(res);
 	}
 
 	/**
@@ -246,35 +247,13 @@ export default class TfsService
 		try {
 			const handler = getNtlmHandler(process.env.TFS_USERNAME, process.env.TFS_PASSWORD, "", "");
 			this._api = new WebApi(process.env.TFS_API_URL, handler);
+			
+			// (async () => {
+			// 	let res = await this.getTaskInfo(8523);
+			// 	console.log(res);
+			// })();
 		} catch (err) {
 			Log.error(err);
-		}
-	}
-
-	/**
-	 * Parse float number
-	 * @param num
-	 */
-	private parseFloat(num: string | number)
-	{
-		return parseFloat(((num || "") + "").replace(",", "."));
-	}
-
-
-	/**
-	 * Get Task info from work item
-	 * @param workItem
-	 */
-	private createTaskInfo(workItem: WorkItem): TaskInfo {
-		return {
-			Id: workItem.id,
-			Title: workItem.fields["System.Title"],
-			Activity: workItem.fields["Microsoft.VSTS.Common.Activity"],
-			State: workItem.fields["System.State"],
-			Tags: workItem.fields["System.Tags"],
-			EstimatedWork: this.parseFloat(workItem.fields["Microsoft.VSTS.Scheduling.EstimatedWork"]),
-			CompletedWork: this.parseFloat(workItem.fields["Microsoft.VSTS.Scheduling.CompletedWork"]),
-			RemainingWork: this.parseFloat(workItem.fields["Microsoft.VSTS.Scheduling.RemainingWork"])
 		}
 	}
 }

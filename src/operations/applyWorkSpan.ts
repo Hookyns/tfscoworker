@@ -5,17 +5,17 @@ import {MessageType} from "../messages/messageType";
 
 export default async function applyWorkSpan(message: IApplyWorkSpanMessage, client: DesktopClient, tfsService: TfsService) {
 	try {
-		let task = await tfsService.applyWorkSpan(message.TaskId, message.WorkTime, client.workContext.memberInfo.displayName);
+		let task = await tfsService.applyWorkSpan(message.taskId, message.workTime, client.workContext.memberInfo.displayName);
 
-		client.send<IWorkSpanApplyResultMessage>({
-			Type: MessageType.WorkSpanApplyResult,
-			Task: task
+		await client.send<IWorkSpanApplyResultMessage>({
+			type: MessageType.WorkSpanApplyResult,
+			task: task
 		});
 	} catch (err) {
-		client.send<IWorkSpanApplyResultMessage>({
-			Type: MessageType.WorkSpanApplyResult,
-			Task: null,
-			Error: err.message
+		await client.send<IWorkSpanApplyResultMessage>({
+			type: MessageType.WorkSpanApplyResult,
+			task: null,
+			error: err.message
 		});
 	}
 }

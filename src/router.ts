@@ -7,7 +7,7 @@ import listMyProjects from "./operations/listMyProjects";
 import applyWorkSpan from "./operations/applyWorkSpan";
 import listTaskPerDayWork from "./operations/listTaskPerDayWork";
 
-export const RouteTable: {[key: number]: (message: IBaseMessage, client: DesktopClient, tfsService: TfsService) => void} = {
+export const RouteTable: {[key: number]: (message: IBaseMessage, client: DesktopClient, tfsService: TfsService) => Promise<void>} = {
 	[MessageType.ListMyProjects]: listMyProjects,
 	[MessageType.ListMyTasks]: listMyTasks,
 	[MessageType.ApplyWorkSpan]: applyWorkSpan,

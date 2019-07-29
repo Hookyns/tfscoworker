@@ -3,7 +3,7 @@ import TfsService from "../tfsService";
 import {IListMyProjectsMessage, IProjectListMessage} from "../messages/baseMessages";
 import {MessageType} from "../messages/messageType";
 
-export default function listMyProjects(message: IListMyProjectsMessage, client: DesktopClient, tfsService: TfsService) {
+export default async function listMyProjects(message: IListMyProjectsMessage, client: DesktopClient, tfsService: TfsService) {
 	try {
 		let projects = [];
 
@@ -13,15 +13,15 @@ export default function listMyProjects(message: IListMyProjectsMessage, client: 
 			projects.push(projInfo);
 		}
 
-		client.send<IProjectListMessage>({
-			Type: MessageType.ProjectsList,
-			Projects: projects
+		await client.send<IProjectListMessage>({
+			type: MessageType.ProjectsList,
+			projects: projects
 		});
 	} catch (err) {
-		client.send<IProjectListMessage>({
-			Type: MessageType.ProjectsList,
-			Projects: null,
-			Error: err.message
+		await client.send<IProjectListMessage>({
+			type: MessageType.ProjectsList,
+			projects: null,
+			error: err.message
 		});
 	}
 } 

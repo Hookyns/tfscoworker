@@ -1,17 +1,41 @@
 export default interface TaskInfo {
-	Id: number | undefined;
+	/**
+	 * TFS Id of task
+	 */
+	id: number | undefined;
 
-	Title: string;
-	
-	State: string;
+	/**
+	 * Title
+	 */
+	title: string;
 
-	Activity: string;
-	
-	EstimatedWork: number;
-	
-	CompletedWork: number;
-	
-	RemainingWork: number;
-	
-	Tags: Array<string>;
+	/**
+	 * State
+	 */
+	state: string;
+
+	/**
+	 * Activity
+	 */
+	activity: string;
+
+	/**
+	 * Estimated work time
+	 */
+	estimatedWork: number;
+
+	/**
+	 * Completed work time
+	 */
+	completedWork: number;
+
+	/**
+	 * Remaining work time
+	 */
+	remainingWork: number;
+
+	/**
+	 * Tags, separated by ";"
+	 */
+	tags: string;
 }

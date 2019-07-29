@@ -6,17 +6,17 @@ import {MessageType} from "../messages/messageType";
 export default async function listTaskPerDayWork(message: IListTaskPerDayWorkMessage, client: DesktopClient, tfsService: TfsService)
 {
 	try {
-		let work = await tfsService.getTaskWorkPerDays(message.TaskId);
+		let work = await tfsService.getTaskWorkPerDays(message.taskId);
 
-		client.send<ITaskPerDayWorkMessage>({
-			Type: MessageType.TaskPerDayWork,
-			Work: work
+		await client.send<ITaskPerDayWorkMessage>({
+			type: MessageType.TaskPerDayWork,
+			work: work
 		});
 	} catch (err) {
-		client.send<ITaskPerDayWorkMessage>({
-			Type: MessageType.TaskPerDayWork,
-			Work: undefined,
-			Error: err.message
+		await client.send<ITaskPerDayWorkMessage>({
+			type: MessageType.TaskPerDayWork,
+			work: undefined,
+			error: err.message
 		});
 	}
 }

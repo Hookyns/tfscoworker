@@ -9,10 +9,10 @@ client.connect(10101, "127.0.0.1", function() {
 	
 	// Send handshake packet
 	client.write(msgPack.encode({ 
-		Type: 1,
-		Identifier: [100, 100, 100],
-		User: "User",
-		Password: "pass*****"
+		type: 1,
+		identifier: [100, 100, 100],
+		user: "User",
+		password: "pass*****"
 	}));
 });
 

@@ -7,6 +7,7 @@ import Log from "./log";
 import WorkContext from "./dtos/workContext";
 import {IHandshakeMessage} from "./messages/baseMessages";
 import {TeamProject, WebApiTeamRef} from "azure-devops-node-api-0.7.0/api/interfaces/CoreInterfaces";
+import {MessageType} from "./messages/messageType";
 
 /**
  * Base Application class
@@ -28,7 +29,7 @@ export default class Application
 	 * Server for desktop clients
 	 */
 	private server: DesktopClientServer;
-	
+
 	/**
 	 * Application instance getter
 	 */
@@ -57,7 +58,7 @@ export default class Application
 
 		// Create singleton instance
 		Application._instance = Reflect.construct(Application, [], ApplicationActivator);
-		
+
 		// Initialize
 		await Application._instance.init();
 	}
@@ -66,13 +67,14 @@ export default class Application
 	 * Fetch client's work context
 	 * @param handshakeMessage
 	 */
-	public async fetchClientWorkContext(handshakeMessage: IHandshakeMessage): Promise<WorkContext> {
-		let members = this.tfsService.teamMembers.filter(m => m.uniqueName == handshakeMessage.User);
-		
+	public async fetchClientWorkContext(handshakeMessage: IHandshakeMessage): Promise<WorkContext>
+	{
+		let members = this.tfsService.teamMembers.filter(m => m.uniqueName == handshakeMessage.user);
+
 		if (members.length != 1) {
 			return null;
 		}
-		
+
 		return new WorkContext(members[0]);
 	}
 
@@ -93,11 +95,11 @@ export default class Application
 		this.tfsService = new TfsService();
 		// Load all needed, cacheable info from TFS
 		await this.tfsService.loadTfsInfo();
-		
+
 		// Init WS server for desktop clients
 		this.server = new DesktopClientServer(parseInt(process.env.PORT));
 		this.server.start();
-		
+
 		this.server.onMessage.do(data => this.routeMessage(data));
 	}
 
@@ -105,15 +107,21 @@ export default class Application
 	 * Route message
 	 * @param data
 	 */
-	private routeMessage(data: EventArg<IClientMessageArg>)
+	private async routeMessage(data: EventArg<IClientMessageArg>)
 	{
-		const operation = RouteTable[data.data.message.Type];
-		
+		Log.talkative(`Message from ${data.data.client.workContext.memberInfo.displayName}: type: ${MessageType[data.data.message.type]}`, data.data.message);
+
+		const operation = RouteTable[data.data.message.type];
+
 		if (!operation) {
-			Log.error(`Operation for message ${data.data.message.Type} wasn't found`)
+			Log.error(`Operation for message ${data.data.message.type} wasn't found`)
 		}
 
-		operation(data.data.message, data.data.client, this.tfsService);
+		try {
+			await operation(data.data.message, data.data.client, this.tfsService);
+		} catch (err) {
+			Log.error(err);
+		}
 	}
 }
 

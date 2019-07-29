@@ -2,6 +2,7 @@
  * Message type enum
  */
 export enum MessageType {
+	// Not used
 	Connect = 0,
 	
 	// Handshake request
@@ -10,7 +11,7 @@ export enum MessageType {
 	// Handshake response
 	HandshakeStatus = 2,
 	
-	// Disconnect message - initiated from server -> kick
+	// Not used; Disconnect message - initiated from server -> kick
 	Disconnect = 3,
 	
 	// Client requests list of its projects

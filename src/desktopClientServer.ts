@@ -157,7 +157,7 @@ export default class DesktopClientServer
 	 */
 	private acceptClient(client: DesktopClient, message: IHandshakeMessage)
 	{
-		Log.info("New client handshaked, user:", message.User);
+		Log.info("New client handshaked, user:", message.user);
 
 		this.clients.push(client);
 

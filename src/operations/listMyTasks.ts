@@ -1,9 +1,10 @@
 import TfsService from "../tfsService";
 import DesktopClient from "../desktopClient";
 import {IListMyTasksMessage, ITaskListMessage} from "../messages/baseMessages";
-import {WorkItemQueryResult} from "azure-devops-node-api-0.7.0/api/interfaces/WorkItemTrackingInterfaces";
+import {WorkItemQueryResult, WorkItem} from "azure-devops-node-api-0.7.0/api/interfaces/WorkItemTrackingInterfaces";
 import TaskInfo from "../dtos/taskInfo";
 import {MessageType} from "../messages/messageType";
+import {createTaskInfo, toFloat, toInt} from "../utility/dataHelper";
 
 export default async function listMyTasks(message: IListMyTasksMessage, client: DesktopClient, tfsService: TfsService) {
 	try {
@@ -25,39 +26,29 @@ SELECT [System.Id], [System.WorkItemType], [System.Title], [System.AssignedTo], 
 		)
 	ORDER BY [State], [Changed Date], [Completed Work] DESC
 `
-		}, {projectId: message.ProjectId, teamId: ""} as any);
+		}, {projectId: message.projectId, teamId: ""} as any);
 
 		// Select IDs
 		let tasksIds = queryMatch.workItems.map(item => item.id);
 
 		// List tasks details
-		let tasks = await api.getWorkItems(tasksIds, [
+		let tasks: WorkItem[] = await api.getWorkItems(tasksIds, [
 			"System.WorkItemType", "System.Title", "System.AssignedTo", "System.State", "System.Tags",
 			"Microsoft.VSTS.Scheduling.EstimatedWork", "Microsoft.VSTS.Scheduling.CompletedWork",
 			"Microsoft.VSTS.Scheduling.RemainingWork", "Microsoft.VSTS.Common.Activity"]);
 
 		// Create result set
-		let result: Array<TaskInfo> = tasks.map(t => ({
-			Id: t.id,
-			Title: t.fields["System.Title"],
-			Activity: t.fields["Microsoft.VSTS.Common.Activity"],
-			State: t.fields["System.State"],
-			Tags: t.fields["System.Tags"],
-			EstimatedWork: t.fields["Microsoft.VSTS.Scheduling.EstimatedWork"],
-			CompletedWork: t.fields["Microsoft.VSTS.Scheduling.CompletedWork"],
-			RemainingWork: t.fields["Microsoft.VSTS.Scheduling.RemainingWork"]
-		}));
+		let result: Array<TaskInfo> = tasks.map(t => createTaskInfo(t));
 
-		client.send<ITaskListMessage>({
-			Type: MessageType.TasksList, 
-			Tasks: result
+		await client.send<ITaskListMessage>({
+			type: MessageType.TasksList, 
+			tasks: result
 		});
 	} catch (err) {
-
-		client.send<ITaskListMessage>({
-			Type: MessageType.TasksList, 
-			Tasks: null,
-			Error: err.message
+		await client.send<ITaskListMessage>({
+			type: MessageType.TasksList, 
+			tasks: null,
+			error: err.message
 		});
 	}
 }
