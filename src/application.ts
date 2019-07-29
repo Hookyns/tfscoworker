@@ -1,20 +1,19 @@
-import DesktopClientServer from "./desktopClientServer";
+import DesktopClientServer from "./desktop-client/desktopClientServer";
 import TfsService from "./tfsService";
 import EventArg from "./event/eventArg";
 import IClientMessageArg from "./dtos/clientMessageArg";
-import {RouteTable} from "./router";
+import {RouteTable} from "./desktop-client/router";
 import Log from "./log";
 import WorkContext from "./dtos/workContext";
-import {IHandshakeMessage} from "./messages/baseMessages";
-import {TeamProject, WebApiTeamRef} from "azure-devops-node-api-0.7.0/api/interfaces/CoreInterfaces";
-import {MessageType} from "./messages/messageType";
+import {IHandshakeMessage} from "./desktop-client/messages/messageInterfaces";
+import {MessageType} from "./desktop-client/messages/messageType";
+import WebHooksServer from "./tfs-hooks/webHooksServer";
 
 /**
  * Base Application class
  */
 export default class Application
 {
-
 	/**
 	 * Field holding instance
 	 */
@@ -29,6 +28,11 @@ export default class Application
 	 * Server for desktop clients
 	 */
 	private server: DesktopClientServer;
+
+	/**
+	 * Web Hooks server instance
+	 */
+	private webHooksServer: WebHooksServer;
 
 	/**
 	 * Application instance getter
@@ -96,6 +100,10 @@ export default class Application
 		// Load all needed, cacheable info from TFS
 		await this.tfsService.loadTfsInfo();
 
+		// Init Web Hooks server
+		this.webHooksServer = new WebHooksServer(parseInt(process.env.WEB_HOOKS_PORT));
+		this.webHooksServer.start();
+
 		// Init WS server for desktop clients
 		this.server = new DesktopClientServer(parseInt(process.env.PORT));
 		this.server.start();
@@ -109,7 +117,7 @@ export default class Application
 	 */
 	private async routeMessage(data: EventArg<IClientMessageArg>)
 	{
-		Log.talkative(`Message from ${data.data.client.workContext.memberInfo.displayName}: type: ${MessageType[data.data.message.type]}`, data.data.message);
+		Log.talkative(`${new Date().toISOString()}: Message from ${data.data.client.workContext.memberInfo.displayName}: type: ${MessageType[data.data.message.type]}`, data.data.message);
 
 		const operation = RouteTable[data.data.message.type];
 

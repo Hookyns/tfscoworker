@@ -37,4 +37,25 @@ export enum MessageType {
 	
 	// Detailed work time, split to days, of task
 	TaskPerDayWork = 11,
+
+	// Create new task
+	CreateTask = 12,
+
+	// Task created notice
+	TaskCreated = 13,
+
+
+
+	// Task removed
+	TaskRemoved = 101,
+
+	// New task assigned to client
+	TaskAssigned = 102,
+
+	// Task reassigned to somebody else
+	TaskReassigned = 103,
+
+
+
+
 }

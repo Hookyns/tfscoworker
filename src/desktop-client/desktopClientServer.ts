@@ -1,12 +1,12 @@
 import * as WebSocket from "ws";
 import * as $http from "http";
-import TriggerEvent from "./event/triggerEvent";
-import BaseEvent from "./event/baseEvent";
+import TriggerEvent from "../event/triggerEvent";
+import BaseEvent from "../event/baseEvent";
 import {DesktopClientServerOptions} from "./desktopClientServerOptions";
-import {IBaseMessage, IHandshakeMessage} from "./messages/baseMessages";
+import {IBaseMessage, IHandshakeMessage} from "./messages/messageInterfaces";
 import DesktopClient from "./desktopClient";
-import IClientMessageArg from "./dtos/clientMessageArg";
-import Log from "./log";
+import IClientMessageArg from "../dtos/clientMessageArg";
+import Log from "../log";
 import {AddressInfo} from "ws";
 
 /**

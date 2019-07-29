@@ -1,5 +1,5 @@
-import DesktopClient from "../desktopClient";
-import {IBaseMessage} from "../messages/baseMessages";
+import DesktopClient from "../desktop-client/desktopClient";
+import {IBaseMessage} from "../desktop-client/messages/messageInterfaces";
 
 /**
  * Client message DTO 

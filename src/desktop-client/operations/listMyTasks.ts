@@ -1,10 +1,10 @@
-import TfsService from "../tfsService";
+import TfsService from "../../tfsService";
 import DesktopClient from "../desktopClient";
-import {IListMyTasksMessage, ITaskListMessage} from "../messages/baseMessages";
+import {IListMyTasksMessage, ITaskListMessage} from "../messages/messageInterfaces";
 import {WorkItemQueryResult, WorkItem} from "azure-devops-node-api-0.7.0/api/interfaces/WorkItemTrackingInterfaces";
-import TaskInfo from "../dtos/taskInfo";
+import TaskInfo from "../../dtos/taskInfo";
 import {MessageType} from "../messages/messageType";
-import {createTaskInfo, toFloat, toInt} from "../utility/dataHelper";
+import {createTaskInfo, toFloat, toInt} from "../../utility/dataHelper";
 
 export default async function listMyTasks(message: IListMyTasksMessage, client: DesktopClient, tfsService: TfsService) {
 	try {
@@ -41,12 +41,14 @@ SELECT [System.Id], [System.WorkItemType], [System.Title], [System.AssignedTo], 
 		let result: Array<TaskInfo> = tasks.map(t => createTaskInfo(t));
 
 		await client.send<ITaskListMessage>({
-			type: MessageType.TasksList, 
+			type: MessageType.TasksList,
+			projectId: message.projectId,
 			tasks: result
 		});
 	} catch (err) {
 		await client.send<ITaskListMessage>({
 			type: MessageType.TasksList, 
+			projectId: message.projectId,
 			tasks: null,
 			error: err.message
 		});

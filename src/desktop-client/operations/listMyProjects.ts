@@ -1,6 +1,6 @@
 import DesktopClient from "../desktopClient";
-import TfsService from "../tfsService";
-import {IListMyProjectsMessage, IProjectListMessage} from "../messages/baseMessages";
+import TfsService from "../../tfsService";
+import {IListMyProjectsMessage, IProjectListMessage} from "../messages/messageInterfaces";
 import {MessageType} from "../messages/messageType";
 
 export default async function listMyProjects(message: IListMyProjectsMessage, client: DesktopClient, tfsService: TfsService) {

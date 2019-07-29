@@ -1,6 +1,6 @@
 import {MessageType} from "./messageType";
-import ProjectInfo from "../dtos/projectInfo";
-import TaskInfo from "../dtos/taskInfo";
+import ProjectInfo from "../../dtos/projectInfo";
+import TaskInfo from "../../dtos/taskInfo";
 
 /**
  * Base message interface
@@ -72,6 +72,14 @@ export interface IListMyTasksMessage extends IBaseMessage {
  * Response: Tasks list
  */
 export interface ITaskListMessage extends IBaseResponseMessage {
+	/**
+	 * Project ID (can be unique project name)
+	 */
+	projectId: string;
+	
+	/**
+	 * List of tasks
+	 */
 	tasks: Array<TaskInfo>
 }
 
@@ -133,4 +141,84 @@ export interface ITaskPerDayWorkMessage extends IBaseResponseMessage {
 	 * @description Key-value collection (dictionary) with work time sums per day. Key is ISO date format. Value is float number.
 	 */
 	work: { [date: string]: number };
+}
+
+/**
+ * Request: Create task
+ */
+export interface ICreateTaskMessage extends IBaseMessage {
+	/**
+	 * Project ID (can be unique project name)
+	 */
+	projectId: string;
+
+	/**
+	 * Task which should be created
+	 */
+	task: TaskInfo
+}
+
+/**
+ * Response: Task created
+ */
+export interface ITaskCreatedMessage extends IBaseResponseMessage {
+	/**
+	 * Project ID (can be unique project name)
+	 */
+	projectId: string;
+
+	/**
+	 * Created task info
+	 */
+	task: TaskInfo
+}
+
+/**
+ * Notice: Task removed
+ */
+export interface ITaskRemovedMessage extends IBaseMessage {
+	/**
+	 * Project ID (can be unique project name)
+	 */
+	projectId: string;
+
+	/**
+	 * Task which was removed
+	 */
+	taskId: number
+}
+
+/**
+ * Notice: Task assigned
+ */
+export interface ITaskAssignedMessage extends IBaseMessage {
+	/**
+	 * Project ID (can be unique project name)
+	 */
+	projectId: string;
+
+	/**
+	 * Assigned task info
+	 */
+	task: TaskInfo
+}
+
+/**
+ * Notice: Task reassigned to somebody else
+ */
+export interface ITaskReassigned extends IBaseMessage {
+	/**
+	 * Project ID (can be unique project name)
+	 */
+	projectId: string;
+
+	/**
+	 * Task which was reassigned
+	 */
+	taskId: number
+
+	/**
+	 * New task owner
+	 */
+	userDisplayName: string;
 }

@@ -1,5 +1,5 @@
 import WebSocket = require("ws");
-import {IBaseMessage} from "./messages/baseMessages";
+import {IBaseMessage} from "./messages/messageInterfaces";
 
 const msgPack = require('msgpack5')();
 

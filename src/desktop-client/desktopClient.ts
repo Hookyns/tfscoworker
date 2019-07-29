@@ -1,13 +1,13 @@
 import {Message} from "./message";
-import TriggerEvent from "./event/triggerEvent";
-import {IBaseMessage, IHandshakeMessage, IHandshakeStatusMessage} from "./messages/baseMessages";
-import BaseEvent from "./event/baseEvent";
+import TriggerEvent from "../event/triggerEvent";
+import {IBaseMessage, IHandshakeMessage, IHandshakeStatusMessage} from "./messages/messageInterfaces";
+import BaseEvent from "../event/baseEvent";
 import {MessageType} from "./messages/messageType";
 import * as WebSocket from "ws";
-import Log from "./log";
+import Log from "../log";
 import DesktopClientServer from "./desktopClientServer";
-import WorkContext from "./dtos/workContext";
-import Application from "./application";
+import WorkContext from "../dtos/workContext";
+import Application from "../application";
 
 export default class DesktopClient
 {

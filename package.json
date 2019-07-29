@@ -27,6 +27,7 @@
   "dependencies": {
     "azure-devops-node-api": "^9.0.1",
     "dotenv": "^8.0.0",
+    "formidable": "^1.2.1",
     "msgpack5": "^4.2.1",
     "q": "^1.5.1",
     "ws": "^7.1.1"
