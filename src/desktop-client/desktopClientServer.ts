@@ -91,7 +91,7 @@ export default class DesktopClientServer
 		this.server
 			.on("listening", () => {
 				let address: AddressInfo = this.server.address() as AddressInfo;
-				Log.info(`Server is listening on [${address.address}]:${address.port}`);
+				Log.info(`Client app server is listening on [${address.address}]:${address.port}`);
 			})
 			.on("connection", (socket, request) => this.connection(socket as any, request))
 	}

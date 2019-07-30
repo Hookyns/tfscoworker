@@ -1,6 +1,6 @@
 import {IApplyWorkSpanMessage, IWorkSpanApplyResultMessage} from "../messages/messageInterfaces";
 import DesktopClient from "../desktopClient";
-import TfsService from "../../tfsService";
+import TfsService from "../../tfs-api/tfsService";
 import {MessageType} from "../messages/messageType";
 
 export default async function applyWorkSpan(message: IApplyWorkSpanMessage, client: DesktopClient, tfsService: TfsService) {

@@ -1,5 +1,5 @@
 import DesktopClient from "../desktopClient";
-import TfsService from "../../tfsService";
+import TfsService from "../../tfs-api/tfsService";
 import {IListMyProjectsMessage, IProjectListMessage} from "../messages/messageInterfaces";
 import {MessageType} from "../messages/messageType";
 

@@ -1,17 +1,18 @@
 import {getNtlmHandler} from "azure-devops-node-api"; // TODO: Extract from package and put into azure-devops-node-api-0.7.0
 import {WebApi} from "azure-devops-node-api-0.7.0/api/WebApi";
-import Log from "./log";
+import Log from "../log";
 import {TeamProjectReference} from "azure-devops-node-api-0.7.0/api/interfaces/CoreInterfaces";
 import {
 	IdentityRef,
 	JsonPatchOperation,
 	Operation
 } from "azure-devops-node-api-0.7.0/api/interfaces/common/VSSInterfaces";
-import ProjectInfo from "./dtos/projectInfo";
-import TeamMemberInfo from "./dtos/teamMemberInfo";
-import TaskInfo from "./dtos/taskInfo";
+import ProjectInfo from "../dtos/projectInfo";
+import TeamMemberInfo from "../dtos/teamMemberInfo";
+import TaskInfo from "../dtos/taskInfo";
 import {WorkItem} from "azure-devops-node-api-0.7.0/api/interfaces/WorkItemTrackingInterfaces";
-import {createTaskInfo, toFloat, toInt} from "./utility/dataHelper";
+import {createTaskInfo, getFieldPath, toFloat, toInt} from "../utility/dataHelper";
+import {FieldName} from "./enums";
 
 export default class TfsService
 {
@@ -69,7 +70,6 @@ export default class TfsService
 	{
 		return Promise.all([
 			this.loadProjects(),
-			this.loadFields()
 		]);
 	}
 
@@ -80,12 +80,7 @@ export default class TfsService
 	public async getTaskInfo(taskId: number): Promise<TaskInfo>
 	{
 		const wit = this._api.getQWorkItemTrackingApi();
-		let task = await wit.getWorkItem(taskId,
-			[
-				"System.WorkItemType", "System.Title", "System.AssignedTo", "System.State", "System.Tags",
-				"Microsoft.VSTS.Scheduling.EstimatedWork", "Microsoft.VSTS.Scheduling.CompletedWork",
-				"Microsoft.VSTS.Scheduling.RemainingWork", "Microsoft.VSTS.Common.Activity"
-			]);
+		let task = await wit.getWorkItem(taskId, FieldName.TaskInfoFieldNames);
 
 		return createTaskInfo(task);
 	}
@@ -106,12 +101,12 @@ export default class TfsService
 		let index = 0;
 		
 		for (let revision of revisions) {
-			let dateTime = new Date(revision.fields["System.ChangedDate"]);
+			let dateTime = new Date(revision.fields[FieldName.ChangedDate]);
 			let date = new Date(dateTime.getFullYear(), dateTime.getMonth(), dateTime.getDate());
 			let dateId = date.toISOString();
 			
-			let prevCompletedWork = index > 0 ? toFloat(revisions[index - 1].fields["Microsoft.VSTS.Scheduling.completedWork"]) : 0;
-			let addedTime = toFloat(revision.fields["Microsoft.VSTS.Scheduling.completedWork"]) - prevCompletedWork;
+			let prevCompletedWork = index > 0 ? toFloat(revisions[index - 1].fields[FieldName.CompletedWork]) : 0;
+			let addedTime = toFloat(revision.fields[FieldName.CompletedWork]) - prevCompletedWork;
 			
 			groups[dateId] = (groups[dateId] || 0) + addedTime;
 			
@@ -144,19 +139,19 @@ export default class TfsService
 		let patch: Array<JsonPatchOperation> = [
 			{
 				op: Operation.Replace,
-				path: "/fields/Microsoft.VSTS.Scheduling.CompletedWork",
+				path: getFieldPath(FieldName.CompletedWork),
 				value: task.completedWork + workSpan,
 				from: undefined
 			},
 			{
 				op: Operation.Replace,
-				path: "/fields/Microsoft.VSTS.Scheduling.RemainingWork",
+				path: getFieldPath(FieldName.RemainingWork),
 				value: remaining,
 				from: undefined
 			},
 			{
 				op: Operation.Add,
-				path: "/fields/System.History",
+				path: getFieldPath(FieldName.History),
 				value: "Work progress by: " + userDisplayName,
 				from: undefined
 			}
@@ -170,15 +165,6 @@ export default class TfsService
 		}
 		
 		return createTaskInfo(res);
-	}
-
-	/**
-	 * Load all work items fields
-	 */
-	private async loadFields()
-	{
-		// const wit = this._api.getQWorkItemTrackingApi();
-		// let fields = await wit.getFields();
 	}
 
 	/**
@@ -247,11 +233,6 @@ export default class TfsService
 		try {
 			const handler = getNtlmHandler(process.env.TFS_USERNAME, process.env.TFS_PASSWORD, "", "");
 			this._api = new WebApi(process.env.TFS_API_URL, handler);
-			
-			// (async () => {
-			// 	let res = await this.getTaskInfo(8523);
-			// 	console.log(res);
-			// })();
 		} catch (err) {
 			Log.error(err);
 		}

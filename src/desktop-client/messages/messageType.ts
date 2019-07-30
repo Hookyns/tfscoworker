@@ -44,6 +44,12 @@ export enum MessageType {
 	// Task created notice
 	TaskCreated = 13,
 
+	// List task states
+	ListTaskStates = 14,
+
+	// List of task statesN
+	TaskStatesList = 15,
+
 
 
 	// Task removed

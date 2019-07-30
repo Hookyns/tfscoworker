@@ -1,4 +1,4 @@
-import {MessageType} from "./messageType";
+import { MessageType } from "./messageType";
 import ProjectInfo from "../../dtos/projectInfo";
 import TaskInfo from "../../dtos/taskInfo";
 
@@ -7,7 +7,7 @@ import TaskInfo from "../../dtos/taskInfo";
  */
 export interface IBaseMessage
 {
-	type: MessageType;
+    type: MessageType;
 }
 
 /**
@@ -15,10 +15,10 @@ export interface IBaseMessage
  */
 export interface IBaseResponseMessage extends IBaseMessage
 {
-	/**
-	 * Error message in case of error
-	 */
-	error?: string;
+    /**
+     * Error message in case of error
+     */
+    error?: string;
 }
 
 /**
@@ -27,7 +27,7 @@ export interface IBaseResponseMessage extends IBaseMessage
  */
 export interface IDisconnectMessage extends IBaseMessage
 {
-	reason: string;
+    reason: string;
 }
 
 /**
@@ -35,190 +35,224 @@ export interface IDisconnectMessage extends IBaseMessage
  */
 export interface IHandshakeMessage extends IBaseMessage
 {
-	/**
-	 * Identifier
-	 */
-	identifier: string;
+    /**
+     * Identifier
+     */
+    identifier: string;
 
-	/**
-	 * User name
-	 */
-	user: string;
+    /**
+     * User name
+     */
+    user: string;
 
-	/**
-	 * User password
-	 */
-	password: string;
+    /**
+     * User password
+     */
+    password: string;
 }
 
 /**
  * Response: Handshake response message
  */
-export interface IHandshakeStatusMessage extends IBaseResponseMessage {
-	status: boolean;
+export interface IHandshakeStatusMessage extends IBaseResponseMessage
+{
+    status: boolean;
 }
 
 /**
  * Request: Tasks list
  */
-export interface IListMyTasksMessage extends IBaseMessage {
-	/**
-	 * Project ID (can be unique project name)
-	 */
-	projectId: string;
+export interface IListMyTasksMessage extends IBaseMessage
+{
+    /**
+     * Project ID (can be unique project name)
+     */
+    projectId: string;
 }
 
 /**
  * Response: Tasks list
  */
-export interface ITaskListMessage extends IBaseResponseMessage {
-	/**
-	 * Project ID (can be unique project name)
-	 */
-	projectId: string;
-	
-	/**
-	 * List of tasks
-	 */
-	tasks: Array<TaskInfo>
+export interface ITaskListMessage extends IBaseResponseMessage
+{
+    /**
+     * Project ID (can be unique project name)
+     */
+    projectId: string;
+
+    /**
+     * List of tasks
+     */
+    tasks: Array<TaskInfo>
 }
 
 /**
  * Request: Projects list
  */
-export interface IListMyProjectsMessage extends IBaseMessage {
-	
+export interface IListMyProjectsMessage extends IBaseMessage
+{
+
 }
 
 /**
  * Response: Projects list
  */
-export interface IProjectListMessage extends IBaseResponseMessage {
-	projects: Array<ProjectInfo>
+export interface IProjectListMessage extends IBaseResponseMessage
+{
+    projects: Array<ProjectInfo>
 }
 
 /**
  * Request: Apply work span
  */
-export interface IApplyWorkSpanMessage extends IBaseMessage {
-	/**
-	 * Id of task to which changes should be applied
-	 */
-	taskId: number;
+export interface IApplyWorkSpanMessage extends IBaseMessage
+{
+    /**
+     * Id of task to which changes should be applied
+     */
+    taskId: number;
 
-	/**
-	 * Work span time
-	 */
-	workTime: number;
+    /**
+     * Work span time
+     */
+    workTime: number;
 }
 
 /**
  * Response: Apply work span
  */
-export interface IWorkSpanApplyResultMessage extends IBaseResponseMessage {
-	/**
-	 * Task after work span application
-	 */
-	task: TaskInfo
+export interface IWorkSpanApplyResultMessage extends IBaseResponseMessage
+{
+    /**
+     * Task after work span application
+     */
+    task: TaskInfo
 }
 
 /**
  * Request:Task work times per day
  */
-export interface IListTaskPerDayWorkMessage extends IBaseMessage {
-	/**
-	 * Id of task whose details are required
-	 */
-	taskId: number;
+export interface IListTaskPerDayWorkMessage extends IBaseMessage
+{
+    /**
+     * Id of task whose details are required
+     */
+    taskId: number;
 }
 
 /**
  * Response:Task work times per day
  */
-export interface ITaskPerDayWorkMessage extends IBaseResponseMessage {
-	/**
-	 * Id of task whose details are required
-	 * @description Key-value collection (dictionary) with work time sums per day. Key is ISO date format. Value is float number.
-	 */
-	work: { [date: string]: number };
+export interface ITaskPerDayWorkMessage extends IBaseResponseMessage
+{
+    /**
+     * Id of task whose details are required
+     * @description Key-value collection (dictionary) with work time sums per day. Key is ISO date format. Value is float number.
+     */
+    work: { [date: string]: number };
 }
 
 /**
  * Request: Create task
  */
-export interface ICreateTaskMessage extends IBaseMessage {
-	/**
-	 * Project ID (can be unique project name)
-	 */
-	projectId: string;
+export interface ICreateTaskMessage extends IBaseMessage
+{
+    /**
+     * Project ID (can be unique project name)
+     */
+    projectId: string;
 
-	/**
-	 * Task which should be created
-	 */
-	task: TaskInfo
+    /**
+     * Task which should be created
+     */
+    task: TaskInfo
 }
 
 /**
  * Response: Task created
  */
-export interface ITaskCreatedMessage extends IBaseResponseMessage {
-	/**
-	 * Project ID (can be unique project name)
-	 */
-	projectId: string;
+export interface ITaskCreatedMessage extends IBaseResponseMessage
+{
+    /**
+     * Project ID (can be unique project name)
+     */
+    projectId: string;
 
-	/**
-	 * Created task info
-	 */
-	task: TaskInfo
+    /**
+     * Created task info
+     */
+    task: TaskInfo
 }
 
 /**
  * Notice: Task removed
  */
-export interface ITaskRemovedMessage extends IBaseMessage {
-	/**
-	 * Project ID (can be unique project name)
-	 */
-	projectId: string;
+export interface ITaskRemovedMessage extends IBaseMessage
+{
+    /**
+     * Project ID (can be unique project name)
+     */
+    projectId: string;
 
-	/**
-	 * Task which was removed
-	 */
-	taskId: number
+    /**
+     * Task which was removed
+     */
+    taskId: number
 }
 
 /**
  * Notice: Task assigned
  */
-export interface ITaskAssignedMessage extends IBaseMessage {
-	/**
-	 * Project ID (can be unique project name)
-	 */
-	projectId: string;
+export interface ITaskAssignedMessage extends IBaseMessage
+{
+    /**
+     * Project ID (can be unique project name)
+     */
+    projectId: string;
 
-	/**
-	 * Assigned task info
-	 */
-	task: TaskInfo
+    /**
+     * Assigned task info
+     */
+    task: TaskInfo
 }
 
 /**
  * Notice: Task reassigned to somebody else
  */
-export interface ITaskReassigned extends IBaseMessage {
-	/**
-	 * Project ID (can be unique project name)
-	 */
-	projectId: string;
+export interface ITaskReassigned extends IBaseMessage
+{
+    /**
+     * Project ID (can be unique project name)
+     */
+    projectId: string;
 
-	/**
-	 * Task which was reassigned
-	 */
-	taskId: number
+    /**
+     * Task which was reassigned
+     */
+    taskId: number
 
-	/**
-	 * New task owner
-	 */
-	userDisplayName: string;
+    /**
+     * New task owner
+     */
+    userDisplayName: string;
+}
+
+/**
+ * Request: List task's states
+ */
+export interface IListTaskStates extends IBaseMessage {
+    /**
+     * Project ID (can be unique project name)
+     */
+    projectId: string;
+}
+
+/**
+ * Response: List of task's states
+ */
+export interface ITaskStatesListMessage extends IBaseResponseMessage {
+    /**
+     * List of states
+     */
+    states: Array<string>;
 }

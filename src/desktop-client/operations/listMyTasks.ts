@@ -1,4 +1,4 @@
-import TfsService from "../../tfsService";
+import TfsService from "../../tfs-api/tfsService";
 import DesktopClient from "../desktopClient";
 import {IListMyTasksMessage, ITaskListMessage} from "../messages/messageInterfaces";
 import {WorkItemQueryResult, WorkItem} from "azure-devops-node-api-0.7.0/api/interfaces/WorkItemTrackingInterfaces";

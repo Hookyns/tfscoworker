@@ -1,6 +1,6 @@
 import {IListTaskPerDayWorkMessage, ITaskPerDayWorkMessage} from "../messages/messageInterfaces";
 import DesktopClient from "../desktopClient";
-import TfsService from "../../tfsService";
+import TfsService from "../../tfs-api/tfsService";
 import {MessageType} from "../messages/messageType";
 
 export default async function listTaskPerDayWork(message: IListTaskPerDayWorkMessage, client: DesktopClient, tfsService: TfsService)

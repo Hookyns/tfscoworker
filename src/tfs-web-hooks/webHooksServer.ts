@@ -87,6 +87,7 @@ export default class WebHooksServer
      * @param event
      */
     private async processEvent(event: IBaseEvent): Promise<void> {
+        console.log(event.eventType);
         console.log(event.message.text);
         // console.log(event.resource.revisedBy.name, event.resource.workItemId);
         // console.log(event.resource.fields);
