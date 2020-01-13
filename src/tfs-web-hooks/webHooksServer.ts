@@ -1,6 +1,8 @@
 import * as $http from "http";
 import {IncomingMessage, Server, ServerResponse} from "http";
-import Log from "../log";
+import BaseEvent from "../event/baseEvent";
+import TriggerEvent from "../event/triggerEvent";
+import Log from "../utility/log";
 import {AddressInfo} from "ws";
 import * as formidable from "formidable";
 import {IBaseEvent} from "./interfaces";
@@ -16,6 +18,19 @@ export default class WebHooksServer
      * Server instance
      */
     private server: Server;
+
+    /**
+     * On event message receive event
+     */
+    private _onEventMessage: TriggerEvent<IBaseEvent> = new TriggerEvent<IBaseEvent>("EventMessage");
+
+    /**
+     * On event message receive event
+     */
+    public get onEventMessage(): BaseEvent<IBaseEvent>
+    {
+        return this._onEventMessage;
+    }
 
     /**
      * Ctor
@@ -87,9 +102,7 @@ export default class WebHooksServer
      * @param event
      */
     private async processEvent(event: IBaseEvent): Promise<void> {
-        console.log(event.eventType);
-        console.log(event.message.text);
-        // console.log(event.resource.revisedBy.name, event.resource.workItemId);
-        // console.log(event.resource.fields);
+        Log.info(`Event '${event.eventType}' received. ${event.message.text}`);
+        this._onEventMessage.trigger(event);
     }
 }

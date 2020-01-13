@@ -6,7 +6,7 @@ import {DesktopClientServerOptions} from "./desktopClientServerOptions";
 import {IBaseMessage, IHandshakeMessage} from "./messages/messageInterfaces";
 import DesktopClient from "./desktopClient";
 import IClientMessageArg from "../dtos/clientMessageArg";
-import Log from "../log";
+import Log from "../utility/log";
 import {AddressInfo} from "ws";
 
 /**

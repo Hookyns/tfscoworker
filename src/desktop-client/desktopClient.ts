@@ -4,7 +4,7 @@ import {IBaseMessage, IHandshakeMessage, IHandshakeStatusMessage} from "./messag
 import BaseEvent from "../event/baseEvent";
 import {MessageType} from "./messages/messageType";
 import * as WebSocket from "ws";
-import Log from "../log";
+import Log from "../utility/log";
 import DesktopClientServer from "./desktopClientServer";
 import WorkContext from "../dtos/workContext";
 import Application from "../application";

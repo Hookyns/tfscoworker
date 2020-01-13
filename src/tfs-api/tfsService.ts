@@ -1,6 +1,6 @@
 import {getNtlmHandler} from "azure-devops-node-api"; // TODO: Extract from package and put into azure-devops-node-api-0.7.0
 import {WebApi} from "azure-devops-node-api-0.7.0/api/WebApi";
-import Log from "../log";
+import Log from "../utility/log";
 import {TeamProjectReference} from "azure-devops-node-api-0.7.0/api/interfaces/CoreInterfaces";
 import {
 	IdentityRef,
@@ -118,6 +118,49 @@ export default class TfsService
 	}
 
 	/**
+	 * Get detailed work times split over days
+	 * @param taskId
+	 * @param from
+	 * @param to
+	 */
+	public async getTaskWorkInRange(taskId: number, from: Date, to: Date): Promise<number>
+	{
+		const wit = this._api.getQWorkItemTrackingApi();
+
+		// Get revisions
+		let revisions = (await wit.getRevisions(taskId))
+			.sort((a, b) => a.rev - b.rev);
+
+		// let groups: { [date: string]: number } = {};
+		let index = 0;
+		let sum = 0;
+
+		for (let revision of revisions) {
+			let dateTime = new Date(revision.fields[FieldName.ChangedDate]);
+			
+			if (dateTime < from || dateTime > to) {
+				index++;
+				continue;
+			}
+			
+			// let date = new Date(dateTime.getFullYear(), dateTime.getMonth(), dateTime.getDate());
+			// let dateId = date.toISOString();
+
+			let prevCompletedWork = index > 0 ? toFloat(revisions[index - 1].fields[FieldName.CompletedWork]) : 0;
+			let addedTime = toFloat(revision.fields[FieldName.CompletedWork]) - prevCompletedWork;
+
+			// groups[dateId] = (groups[dateId] || 0) + addedTime;
+			
+			sum += addedTime;
+
+			index++;
+		}
+
+
+		return sum;
+	}
+
+	/**
 	 * Apply work span over given task
 	 * @param taskId
 	 * @param workSpan
@@ -165,6 +208,17 @@ export default class TfsService
 		}
 		
 		return createTaskInfo(res);
+	}
+
+	/**
+	 * Returns team member info about member assigned to given work item
+	 */
+	public async getMemberAssignedTo(workItemId): Promise<TeamMemberInfo>
+	{
+		const wit = this._api.getQWorkItemTrackingApi();
+		let assignedTo = await wit.getWorkItem(workItemId, [ FieldName.AssignedTo ]);
+		console.log(assignedTo);
+		return this._teamMembers.find(m => m.displayName == assignedTo.fields[FieldName.AssignedTo]);
 	}
 
 	/**

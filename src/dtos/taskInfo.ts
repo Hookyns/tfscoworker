@@ -47,5 +47,5 @@ export default interface TaskInfo {
 	 * Task priority
 	 * @type {integer}
 	 */
-	backlogPriority: number;
+	backlogPriority?: number;
 }

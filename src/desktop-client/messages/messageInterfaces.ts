@@ -185,9 +185,19 @@ export interface ITaskCreatedMessage extends IBaseResponseMessage
 }
 
 /**
+ * Base interface for notice messages
+ */
+export interface INoticeMessage extends IBaseMessage {
+    /**
+     * Text of notice
+     */
+    text: string;
+}
+
+/**
  * Notice: Task removed
  */
-export interface ITaskRemovedMessage extends IBaseMessage
+export interface ITaskRemovedMessage extends INoticeMessage
 {
     /**
      * Project ID (can be unique project name)
@@ -203,7 +213,7 @@ export interface ITaskRemovedMessage extends IBaseMessage
 /**
  * Notice: Task assigned
  */
-export interface ITaskAssignedMessage extends IBaseMessage
+export interface ITaskAssignedMessage extends INoticeMessage
 {
     /**
      * Project ID (can be unique project name)
@@ -213,13 +223,13 @@ export interface ITaskAssignedMessage extends IBaseMessage
     /**
      * Assigned task info
      */
-    task: TaskInfo
+    task: TaskInfo;
 }
 
 /**
  * Notice: Task reassigned to somebody else
  */
-export interface ITaskReassigned extends IBaseMessage
+export interface ITaskReassigned extends INoticeMessage
 {
     /**
      * Project ID (can be unique project name)

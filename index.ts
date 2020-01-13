@@ -1,5 +1,5 @@
 import Application from "./src/application";
-import Log, {LogLevel} from "./src/log";
+import Log, {LogLevel} from "./src/utility/log";
 
 // Setup logging
 Log.setLoggers({
