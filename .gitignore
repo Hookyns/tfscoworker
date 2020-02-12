@@ -74,3 +74,6 @@ typings/
 
 # Exceptions
 !node_modules/azure-devops-node-api-0.7.0/
+!node_modules/typed-rest-client/
+!node_modules/typed-rest-client/**/*.js
+!node_modules/typed-rest-client/**/*.d.ts
