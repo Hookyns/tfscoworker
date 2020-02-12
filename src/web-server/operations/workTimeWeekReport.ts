@@ -34,6 +34,8 @@ SELECT [System.Id], [System.WorkItemType], [System.Title], [System.AssignedTo], 
 		// Select IDs
 		let tasksIds = queryMatch.workItems.map(item => item.id);
 
+		// TODO: Maximální počet parametrů je 300 (možná za to může délka URL, těžko říct), každopádně zde udělat rozdělení a ideálně po 100 položkách
+		
 		// List tasks details
 		let tasks: WorkItem[] = await api.getWorkItems(tasksIds, [
 			"System.WorkItemType", "System.Title", "System.AssignedTo", "System.State",
