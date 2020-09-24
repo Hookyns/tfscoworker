@@ -227,11 +227,7 @@ export default class TfsService
 	private async loadProjects()
 	{
 		let core = this._api.getQCoreApi();
-		let projects: TeamProjectReference[] = await new Promise((resolve, reject) => {
-			core.getProjects()
-				.then((val) => resolve(val))
-				.catch(reason => reject(reason));
-		});
+		let projects: TeamProjectReference[] = await core.getProjects();
 
 		// List all project and store them in memory
 		for (let project of projects) {
