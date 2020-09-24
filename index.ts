@@ -15,4 +15,7 @@ Log.setLogLevel(LogLevel.Debug);
 Application.initialize()
 	.then(() => {
 		Log.info("Application initialized");
+	})
+	.catch((reason) => {
+		console.error(reason);
 	});
