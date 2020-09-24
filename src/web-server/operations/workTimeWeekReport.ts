@@ -34,13 +34,17 @@ SELECT [System.Id], [System.WorkItemType], [System.Title], [System.AssignedTo], 
 		// Select IDs
 		let tasksIds = queryMatch.workItems.map(item => item.id);
 
-		// TODO: Maximální počet parametrů je 300 (možná za to může délka URL, těžko říct), každopádně zde udělat rozdělení a ideálně po 100 položkách
-		
 		// List tasks details
-		let tasks: WorkItem[] = await api.getWorkItems(tasksIds, [
-			"System.WorkItemType", "System.Title", "System.AssignedTo", "System.State",
-			"Microsoft.VSTS.Scheduling.EstimatedWork", "Microsoft.VSTS.Scheduling.CompletedWork",
-			"Microsoft.VSTS.Scheduling.RemainingWork", "Microsoft.VSTS.Common.Activity"]);
+		let tasks: WorkItem[] = [];
+		let taskIdsToFetch = tasksIds.slice();
+		while (taskIdsToFetch.length > 0) {
+			tasks = tasks.concat(
+				await api.getWorkItems(taskIdsToFetch.splice(0, 100), [
+				"System.WorkItemType", "System.Title", "System.AssignedTo", "System.State",
+				"Microsoft.VSTS.Scheduling.EstimatedWork", "Microsoft.VSTS.Scheduling.CompletedWork",
+				"Microsoft.VSTS.Scheduling.RemainingWork", "Microsoft.VSTS.Common.Activity"])
+			);
+		}
 
 		let hours = {};
 		for (let taskId of tasksIds)
@@ -75,7 +79,10 @@ SELECT [System.Id], [System.WorkItemType], [System.Title], [System.AssignedTo], 
 		).join("\n");
 
 		response.writeHead(200, {"content-type": "text/html; charset=utf-8"});
-		response.end("<table>" + out + "</table>");
+		response.end("<!DOCTYPE html><html lang='en'>" +
+			"<head><meta charset='UTF-8'><title>Work</title></head>" +
+			"<body><table>" + out + "</table></body>" +
+			"</html>");
 	}
 	catch (ex)
 	{
